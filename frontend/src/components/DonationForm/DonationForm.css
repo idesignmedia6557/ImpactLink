@@ -1,0 +1,377 @@
+/* DonationForm.css - Responsive styles for Stripe donation form */
+
+.donation-form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.donation-form-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.donation-form-header h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.donation-form-header p {
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.donation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #5469d4;
+  box-shadow: 0 0 0 3px rgba(84, 105, 212, 0.1);
+}
+
+.amount-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.amount-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.amount-btn {
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  background: #f7f7f7;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.amount-btn:hover {
+  background: #e8e8e8;
+  border-color: #5469d4;
+}
+
+.amount-btn.active {
+  background: #5469d4;
+  color: white;
+  border-color: #5469d4;
+}
+
+.custom-amount-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.custom-amount-input input {
+  flex: 1;
+}
+
+.currency-symbol {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Stripe Elements styling */
+.stripe-element-container {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  transition: border-color 0.3s ease;
+}
+
+.stripe-element-container:focus-within {
+  border-color: #5469d4;
+  box-shadow: 0 0 0 3px rgba(84, 105, 212, 0.1);
+}
+
+.StripeElement {
+  padding: 0.25rem 0;
+}
+
+.StripeElement--focus {
+  border-color: #5469d4;
+}
+
+.StripeElement--invalid {
+  border-color: #fa755a;
+}
+
+/* Payment method selection */
+.payment-method-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.payment-method-tab {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #666;
+}
+
+.payment-method-tab:hover {
+  color: #333;
+  background: #f9f9f9;
+}
+
+.payment-method-tab.active {
+  color: #5469d4;
+  border-bottom-color: #5469d4;
+}
+
+/* Submit button */
+.submit-btn {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  background: #5469d4;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #4355c9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(84, 105, 212, 0.3);
+}
+
+.submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Loading spinner */
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.6s linear infinite;
+  margin-left: 0.5rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error and success messages */
+.error-message,
+.success-message {
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  margin-top: 1rem;
+}
+
+.error-message {
+  background: #fee;
+  color: #c33;
+  border: 1px solid #fcc;
+}
+
+.success-message {
+  background: #efe;
+  color: #383;
+  border: 1px solid #cfc;
+}
+
+/* Donation impact section */
+.donation-impact {
+  background: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+}
+
+.donation-impact h3 {
+  font-size: 1.25rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.donation-impact ul {
+  list-style: none;
+  padding: 0;
+}
+
+.donation-impact li {
+  padding: 0.5rem 0;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.donation-impact li::before {
+  content: "✓";
+  color: #5469d4;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+/* Recurring donation toggle */
+.recurring-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.recurring-toggle input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+}
+
+.recurring-toggle label {
+  cursor: pointer;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .donation-form-container {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .donation-form-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .amount-buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .payment-method-tabs {
+    flex-direction: column;
+  }
+
+  .payment-method-tab {
+    border-bottom: none;
+    border-left: 3px solid transparent;
+  }
+
+  .payment-method-tab.active {
+    border-left-color: #5469d4;
+    border-bottom-color: transparent;
+  }
+}
+
+@media (max-width: 480px) {
+  .donation-form-container {
+    padding: 1rem;
+    margin: 0.5rem;
+    border-radius: 8px;
+  }
+
+  .donation-form-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .amount-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .submit-btn {
+    font-size: 1rem;
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+/* Accessibility improvements */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+  outline: 3px solid #5469d4;
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  .donation-form-container {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+
+  .submit-btn {
+    display: none;
+  }
+}
