@@ -1,0 +1,18 @@
+/* App.css - Main application styles */
+
+.App {
+  text-align: center;
+  min-height: 100vh;
+}
+
+.App-header {
+  background-color: #282c34;
+  padding: 20px;
+  color: white;
+}
+
+.App-main {
+  padding: 20px;
+}
+
+/* Add your custom styles here */
