@@ -15,19 +15,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          
+      
       - name: Install dependencies
         working-directory: ./frontend
-              run: npm install
+        run: npm install
+      
       - name: Build React app
         working-directory: ./frontend
         run: npm run build
-        
+      
       - name: Deploy to server via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -36,7 +37,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./frontend/build/
           server-dir: /public_html/
-          
+      
       - name: Create .htaccess for React Router
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -46,7 +47,7 @@ jobs:
           local-dir: ./
           server-dir: /public_html/
           include: '.htaccess'
-          
+      
       - name: Deployment complete
         run: |
           echo "Deployment successful!"
