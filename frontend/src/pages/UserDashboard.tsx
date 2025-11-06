@@ -1,9 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import './UserDashboard.css';
+import { getUserDonations, getUserImpact } from '../services/api';
 
 interface Donation {
   id: string;
+  // TODO: Replace mock fetchDonations with real API call:
+// Example: const fetchDonations = async () => {
+//   try {
+//     setLoading(true);
+//     const userEmail = 'user@example.com'; // Get from auth context
+//     const data = await getUserImpact(userEmail);
+//     setDonations(data.donations || []);
+//   } catch (error) {
+//     console.error('Error fetching donations:', error);
+//   } finally {
+//     setLoading(false);
+//   }
+// };
   charityName: string;
   amount: number;
   date: string;
