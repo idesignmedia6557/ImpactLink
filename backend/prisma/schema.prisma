@@ -1,0 +1,355 @@
+// Prisma schema for ImpactLink
+// Database: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserType {
+  donor
+  charity_admin
+  admin
+  corporate_admin
+}
+
+enum CharityCategory {
+  education
+  health
+  environment
+  poverty
+  animals
+  other
+}
+
+enum VerificationStatus {
+  pending
+  verified
+  rejected
+}
+
+enum PaymentMethod {
+  credit_card
+  debit_card
+  bank_transfer
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+  refunded
+}
+
+enum RecurringFrequency {
+  monthly
+  quarterly
+  yearly
+}
+
+enum CampaignStatus {
+  draft
+  active
+  completed
+  cancelled
+}
+
+enum NotificationType {
+  donation_received
+  campaign_update
+  verification_status
+  payment_failed
+}
+
+// Core Models
+
+model User {
+  id                   String    @id @default(uuid())
+  email                String    @unique
+  passwordHash         String    @map("password_hash")
+  userType             UserType  @map("user_type")
+  firstName            String?   @map("first_name")
+  lastName             String?   @map("last_name")
+  phone                String?
+  profileImageUrl      String?   @map("profile_image_url")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+  lastLogin            DateTime? @map("last_login")
+  isVerified           Boolean   @default(false) @map("is_verified")
+  verificationToken    String?   @map("verification_token")
+  companyId            String?   @map("company_id")
+  
+  // Relations
+  donations            Donation[]
+  recurringDonations   RecurringDonation[]
+  savedCharities       SavedCharity[]
+  notifications        Notification[]
+  charities            Charity[]
+  badges               Badge[]
+
+  @@map("users")
+}
+
+model Charity {
+  id                        String              @id @default(uuid())
+  name                      String
+  description               String?             @db.Text
+  missionStatement          String?             @map("mission_statement") @db.Text
+  category                  CharityCategory
+  websiteUrl                String?             @map("website_url")
+  logoUrl                   String?             @map("logo_url")
+  bannerImageUrl            String?             @map("banner_image_url")
+  address                   String?
+  city                      String?
+  state                     String?
+  country                   String?
+  postalCode                String?             @map("postal_code")
+  registrationNumber        String?             @map("registration_number")
+  verificationStatus        VerificationStatus  @map("verification_status")
+  verificationDocuments     Json?               @map("verification_documents")
+  adminUserId               String              @map("admin_user_id")
+  createdAt                 DateTime            @default(now()) @map("created_at")
+  updatedAt                 DateTime            @updatedAt @map("updated_at")
+  totalDonationsReceived    Decimal             @default(0) @map("total_donations_received") @db.Decimal(12, 2)
+  activeCampaignsCount      Int                 @default(0) @map("active_campaigns_count")
+  
+  // Relations
+  adminUser                 User                @relation(fields: [adminUserId], references: [id])
+  donations                 Donation[]
+  campaigns                 Campaign[]
+  impactReports             ImpactReport[]
+  fundAllocations           FundAllocation[]
+  recurringDonations        RecurringDonation[]
+  savedByUsers              SavedCharity[]
+  projects                  Project[]
+  payouts                   Payout[]
+
+  @@map("charities")
+}
+
+model Project {
+  id                String    @id @default(uuid())
+  charityId         String    @map("charity_id")
+  title             String
+  description       String    @db.Text
+  targetAmount      Decimal   @map("target_amount") @db.Decimal(12, 2)
+  raisedAmount      Decimal   @default(0) @map("raised_amount") @db.Decimal(12, 2)
+  unitCost          Decimal   @map("unit_cost") @db.Decimal(10, 2)
+  unitName          String    @map("unit_name")
+  images            String?   // Comma-separated URLs or JSON
+  status            String    @default("active")
+  location          String?
+  timeline          String?
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  
+  // Relations
+  charity           Charity   @relation(fields: [charityId], references: [id])
+  donations         Donation[]
+  updates           Update[]
+
+  @@map("projects")
+}
+
+model Donation {
+  id                      String          @id @default(uuid())
+  donorId                 String          @map("donor_id")
+  charityId               String          @map("charity_id")
+  projectId               String?         @map("project_id")
+  campaignId              String?         @map("campaign_id")
+  amount                  Decimal         @db.Decimal(12, 2)
+  unitsFunded             Int?            @map("units_funded")
+  currency                String          @default("USD")
+  paymentMethod           PaymentMethod   @map("payment_method")
+  paymentStatus           PaymentStatus   @map("payment_status")
+  stripePaymentIntentId   String?         @map("stripe_payment_intent_id")
+  transactionFee          Decimal?        @map("transaction_fee") @db.Decimal(10, 2)
+  netAmount               Decimal?        @map("net_amount") @db.Decimal(12, 2)
+  isRecurring             Boolean         @default(false) @map("is_recurring")
+  recurringFrequency      RecurringFrequency? @map("recurring_frequency")
+  donationMessage         String?         @map("donation_message") @db.Text
+  isAnonymous             Boolean         @default(false) @map("is_anonymous")
+  createdAt               DateTime        @default(now()) @map("created_at")
+  updatedAt               DateTime        @updatedAt @map("updated_at")
+  receiptUrl              String?         @map("receipt_url")
+  
+  // Relations
+  donor                   User            @relation(fields: [donorId], references: [id])
+  charity                 Charity         @relation(fields: [charityId], references: [id])
+  project                 Project?        @relation(fields: [projectId], references: [id])
+  campaign                Campaign?       @relation(fields: [campaignId], references: [id])
+  fundAllocations         FundAllocation[]
+
+  @@map("donations")
+}
+
+model Update {
+  id          String    @id @default(uuid())
+  projectId   String    @map("project_id")
+  content     String    @db.Text
+  media       String?   // File path or URL
+  createdAt   DateTime  @default(now()) @map("created_at")
+  
+  // Relations
+  project     Project   @relation(fields: [projectId], references: [id])
+
+  @@map("updates")
+}
+
+model Badge {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  badgeType   String    @map("badge_type") // e.g., 'first_donation', 'impact_10'
+  awardedAt   DateTime  @default(now()) @map("awarded_at")
+  
+  // Relations
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@map("badges")
+}
+
+model CorporateAccount {
+  id          String    @id @default(uuid())
+  companyName String    @map("company_name")
+  billing     String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("corporate_accounts")
+}
+
+model Payout {
+  id          String    @id @default(uuid())
+  charityId   String    @map("charity_id")
+  amount      Decimal   @db.Decimal(12, 2)
+  date        DateTime
+  status      String    @default("pending")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  
+  // Relations
+  charity     Charity   @relation(fields: [charityId], references: [id])
+
+  @@map("payouts")
+}
+
+model Campaign {
+  id              String          @id @default(uuid())
+  charityId       String          @map("charity_id")
+  title           String
+  description     String?         @db.Text
+  goalAmount      Decimal         @map("goal_amount") @db.Decimal(12, 2)
+  currentAmount   Decimal         @default(0) @map("current_amount") @db.Decimal(12, 2)
+  currency        String          @default("USD")
+  startDate       DateTime        @map("start_date")
+  endDate         DateTime?       @map("end_date")
+  status          CampaignStatus
+  imageUrl        String?         @map("image_url")
+  category        String?
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  
+  // Relations
+  charity         Charity         @relation(fields: [charityId], references: [id])
+  donations       Donation[]
+  impactReports   ImpactReport[]
+
+  @@map("campaigns")
+}
+
+model ImpactReport {
+  id                  String    @id @default(uuid())
+  charityId           String    @map("charity_id")
+  campaignId          String?   @map("campaign_id")
+  title               String
+  description         String?   @db.Text
+  amountAllocated     Decimal   @map("amount_allocated") @db.Decimal(12, 2)
+  beneficiariesCount  Int?      @map("beneficiaries_count")
+  reportDate          DateTime  @map("report_date")
+  images              Json?     // Array of image URLs
+  documents           Json?     // Array of document URLs
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  
+  // Relations
+  charity             Charity   @relation(fields: [charityId], references: [id])
+  campaign            Campaign? @relation(fields: [campaignId], references: [id])
+  fundAllocations     FundAllocation[]
+
+  @@map("impact_reports")
+}
+
+model FundAllocation {
+  id                  String          @id @default(uuid())
+  donationId          String          @map("donation_id")
+  charityId           String          @map("charity_id")
+  allocationCategory  String          @map("allocation_category")
+  amount              Decimal         @db.Decimal(12, 2)
+  description         String?         @db.Text
+  allocatedDate       DateTime        @map("allocated_date")
+  impactReportId      String?         @map("impact_report_id")
+  createdAt           DateTime        @default(now()) @map("created_at")
+  
+  // Relations
+  donation            Donation        @relation(fields: [donationId], references: [id])
+  charity             Charity         @relation(fields: [charityId], references: [id])
+  impactReport        ImpactReport?   @relation(fields: [impactReportId], references: [id])
+
+  @@map("fund_allocations")
+}
+
+model RecurringDonation {
+  id                    String              @id @default(uuid())
+  donorId               String              @map("donor_id")
+  charityId             String              @map("charity_id")
+  amount                Decimal             @db.Decimal(12, 2)
+  currency              String              @default("USD")
+  frequency             RecurringFrequency
+  status                String              @default("active") // active, paused, cancelled
+  stripeSubscriptionId  String?             @map("stripe_subscription_id")
+  nextPaymentDate       DateTime            @map("next_payment_date")
+  startDate             DateTime            @map("start_date")
+  endDate               DateTime?           @map("end_date")
+  createdAt             DateTime            @default(now()) @map("created_at")
+  updatedAt             DateTime            @updatedAt @map("updated_at")
+  
+  // Relations
+  donor                 User                @relation(fields: [donorId], references: [id])
+  charity               Charity             @relation(fields: [charityId], references: [id])
+
+  @@map("recurring_donations")
+}
+
+model SavedCharity {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  charityId   String    @map("charity_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  
+  // Relations
+  user        User      @relation(fields: [userId], references: [id])
+  charity     Charity   @relation(fields: [charityId], references: [id])
+
+  @@unique([userId, charityId])
+  @@map("saved_charities")
+}
+
+model Notification {
+  id                  String            @id @default(uuid())
+  userId              String            @map("user_id")
+  type                NotificationType
+  title               String
+  message             String            @db.Text
+  isRead              Boolean           @default(false) @map("is_read")
+  relatedEntityType   String?           @map("related_entity_type")
+  relatedEntityId     String?           @map("related_entity_id")
+  createdAt           DateTime          @default(now()) @map("created_at")
+  
+  // Relations
+  user                User              @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}
