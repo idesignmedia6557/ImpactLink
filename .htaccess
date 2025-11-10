@@ -1,0 +1,326 @@
+# ImpactLink Apache Configuration for HostKing
+# Apache .htaccess for Node.js application with Passenger
+# Domain: impactlink.solovedhelpinghands.org.za
+
+# =============================================================================
+# HTTPS REDIRECT - Force HTTPS for all requests
+# =============================================================================
+
+RewriteEngine On
+
+# Redirect HTTP to HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Redirect www to non-www
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+# =============================================================================
+# PASSENGER CONFIGURATION - Node.js Application
+# =============================================================================
+
+# Enable Passenger
+PassengerEnabled on
+
+# Set Node.js version (HostKing)
+PassengerNodejs /usr/bin/node18
+
+# Application root directory
+PassengerAppRoot /home/username/public_html/impactlink
+
+# Application startup file
+PassengerStartupFile backend/server.js
+
+# Application type
+PassengerAppType node
+
+# Application environment
+PassengerAppEnv production
+
+# Minimum instances (for better performance)
+PassengerMinInstances 1
+
+# Maximum pool size
+PassengerMaxPoolSize 6
+
+# Enable friendly error pages in development
+# PassengerFriendlyErrorPages on
+
+# Application log file
+PassengerLogFile /home/username/logs/passenger.log
+
+# =============================================================================
+# SECURITY HEADERS
+# =============================================================================
+
+<IfModule mod_headers.c>
+    # Prevent clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # XSS Protection
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Prevent MIME type sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # Referrer Policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Content Security Policy (adjust as needed)
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.stripe.com; frame-src https://js.stripe.com;"
+    
+    # HTTP Strict Transport Security (HSTS)
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    
+    # Permissions Policy (formerly Feature Policy)
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# =============================================================================
+# CORS CONFIGURATION
+# =============================================================================
+
+<IfModule mod_headers.c>
+    # Allow CORS for API requests (adjust origins as needed)
+    SetEnvIf Origin "^https?://(localhost:3001|impactlink\.solovedhelpinghands\.org\.za)$" AccessControlAllowOrigin=$0
+    Header always set Access-Control-Allow-Origin %{AccessControlAllowOrigin}e env=AccessControlAllowOrigin
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept"
+    Header always set Access-Control-Allow-Credentials "true"
+    Header always set Access-Control-Max-Age "3600"
+</IfModule>
+
+# Handle preflight OPTIONS requests
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=200,L]
+
+# =============================================================================
+# COMPRESSION - Gzip compression for better performance
+# =============================================================================
+
+<IfModule mod_deflate.c>
+    # Compress HTML, CSS, JavaScript, Text, XML and fonts
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
+    AddOutputFilterByType DEFLATE application/x-font
+    AddOutputFilterByType DEFLATE application/x-font-opentype
+    AddOutputFilterByType DEFLATE application/x-font-otf
+    AddOutputFilterByType DEFLATE application/x-font-truetype
+    AddOutputFilterByType DEFLATE application/x-font-ttf
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE font/opentype
+    AddOutputFilterByType DEFLATE font/otf
+    AddOutputFilterByType DEFLATE font/ttf
+    AddOutputFilterByType DEFLATE image/svg+xml
+    AddOutputFilterByType DEFLATE image/x-icon
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/xml
+</IfModule>
+
+# =============================================================================
+# BROWSER CACHING - Set expiration headers for static assets
+# =============================================================================
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Images
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    
+    # Video
+    ExpiresByType video/mp4 "access plus 1 year"
+    ExpiresByType video/webm "access plus 1 year"
+    
+    # CSS and JavaScript
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    
+    # Fonts
+    ExpiresByType application/vnd.ms-fontobject "access plus 1 year"
+    ExpiresByType font/eot "access plus 1 year"
+    ExpiresByType font/opentype "access plus 1 year"
+    ExpiresByType font/otf "access plus 1 year"
+    ExpiresByType font/ttf "access plus 1 year"
+    ExpiresByType application/x-font-ttf "access plus 1 year"
+    ExpiresByType application/x-font-woff "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    
+    # HTML, JSON, XML
+    ExpiresByType text/html "access plus 0 seconds"
+    ExpiresByType application/json "access plus 0 seconds"
+    ExpiresByType application/xml "access plus 0 seconds"
+    ExpiresByType text/xml "access plus 0 seconds"
+    
+    # Default
+    ExpiresDefault "access plus 1 month"
+</IfModule>
+
+# =============================================================================
+# URL REWRITING - API and Frontend Routes
+# =============================================================================
+
+# Enable mod_rewrite
+RewriteEngine On
+RewriteBase /
+
+# API Routes - Proxy to Node.js backend
+RewriteCond %{REQUEST_URI} ^/api/
+RewriteRule ^api/(.*)$ http://localhost:3000/api/$1 [P,L]
+
+# Stripe Webhooks - Direct to backend
+RewriteCond %{REQUEST_URI} ^/webhooks/stripe
+RewriteRule ^webhooks/stripe$ http://localhost:3000/webhooks/stripe [P,L]
+
+# Health Check Endpoint
+RewriteCond %{REQUEST_URI} ^/health
+RewriteRule ^health$ http://localhost:3000/health [P,L]
+
+# Static files - serve directly if they exist
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Frontend SPA - serve index.html for all other routes
+# RewriteRule ^ /index.html [L]
+
+# =============================================================================
+# FILE UPLOAD LIMITS
+# =============================================================================
+
+# Increase upload size limits
+php_value upload_max_filesize 10M
+php_value post_max_size 10M
+php_value max_execution_time 300
+php_value max_input_time 300
+
+# =============================================================================
+# ERROR DOCUMENTS
+# =============================================================================
+
+# Custom error pages (create these in your application)
+# ErrorDocument 404 /404.html
+# ErrorDocument 500 /500.html
+# ErrorDocument 503 /503.html
+
+# =============================================================================
+# DIRECTORY PROTECTION
+# =============================================================================
+
+# Prevent directory browsing
+Options -Indexes
+
+# Deny access to sensitive files
+<FilesMatch "^\.(env|gitignore|htaccess|htpasswd)$">
+    Require all denied
+</FilesMatch>
+
+# Deny access to configuration files
+<FilesMatch "\.(yml|yaml|json|lock|md)$">
+    <If "%{REQUEST_URI} !~ m#^/api/#">
+        Require all denied
+    </If>
+</FilesMatch>
+
+# Protect backend directory from direct access
+<IfModule mod_rewrite.c>
+    RewriteCond %{REQUEST_URI} ^/backend/
+    RewriteRule ^ - [F,L]
+</IfModule>
+
+# =============================================================================
+# PERFORMANCE OPTIMIZATIONS
+# =============================================================================
+
+# Enable Keep-Alive
+<IfModule mod_headers.c>
+    Header set Connection keep-alive
+</IfModule>
+
+# Disable ETags (we're using Expires headers)
+FileETag None
+
+# =============================================================================
+# SPECIAL ROUTES
+# =============================================================================
+
+# Robots.txt
+<Files "robots.txt">
+    Allow from all
+</Files>
+
+# Sitemap.xml
+<Files "sitemap.xml">
+    Allow from all
+</Files>
+
+# =============================================================================
+# CHARSET
+# =============================================================================
+
+# Set UTF-8 encoding
+AddDefaultCharset UTF-8
+AddCharset UTF-8 .html .css .js .xml .json .rss .atom
+
+# =============================================================================
+# MIME TYPES
+# =============================================================================
+
+<IfModule mod_mime.c>
+    # JavaScript
+    AddType application/javascript js jsonp
+    AddType application/json json
+    
+    # Fonts
+    AddType font/woff woff
+    AddType font/woff2 woff2
+    AddType application/vnd.ms-fontobject eot
+    AddType font/ttf ttf
+    AddType font/otf otf
+    
+    # Images
+    AddType image/webp webp
+    AddType image/svg+xml svg svgz
+    
+    # Video
+    AddType video/mp4 mp4
+    AddType video/webm webm
+</IfModule>
+
+# =============================================================================
+# LOG CONFIGURATION
+# =============================================================================
+
+# Custom log format (if available)
+# LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+# CustomLog logs/access_log combined
+
+# =============================================================================
+# NOTES FOR DEPLOYMENT
+# =============================================================================
+
+# 1. Replace /home/username/ with your actual HostKing username
+# 2. Adjust Passenger settings based on your plan's resources
+# 3. Update CORS origins for production domains
+# 4. Enable SSL certificate in cPanel before deploying
+# 5. Test thoroughly in staging environment first
+# 6. Monitor logs: /home/username/logs/
+# 7. Adjust CSP headers based on your actual CDN/external resources
+
+# =============================================================================
+# END OF CONFIGURATION
+# =============================================================================
