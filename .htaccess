@@ -180,15 +180,15 @@ RewriteBase /
 
 # API Routes - Proxy to Node.js backend
 RewriteCond %{REQUEST_URI} ^/api/
-RewriteRule ^api/(.*)$ http://localhost:3000/api/$1 [P,L]
+RewriteRule ^api/(.*)$ http://localhost:5000/api/$1 [P,L]
 
 # Stripe Webhooks - Direct to backend
 RewriteCond %{REQUEST_URI} ^/webhooks/stripe
-RewriteRule ^webhooks/stripe$ http://localhost:3000/webhooks/stripe [P,L]
+RewriteRule ^webhooks/stripe$ http://localhost:5000/webhooks/stripe [P,L]
 
 # Health Check Endpoint
 RewriteCond %{REQUEST_URI} ^/health
-RewriteRule ^health$ http://localhost:3000/health [P,L]
+RewriteRule ^health$ http://localhost:5000/health [P,L]
 
 # Static files - serve directly if they exist
 RewriteCond %{REQUEST_FILENAME} -f [OR]
