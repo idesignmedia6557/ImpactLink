@@ -72,3 +72,4 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+// Fixed: Ensure proper module resolution for Home component
