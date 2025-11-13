@@ -2,6 +2,95 @@
 
 A transparent micro-donation platform connecting charities with donors
 
+## 🚀 Live Demo
+
+**Try ImpactLink now:** [https://impact-link-d61a13ed.base44.app/](https://impact-link-d61a13ed.base44.app/)
+
+### Current MVP Status (November 2025)
+- ✅ **3 Verified Charities** added to South African database
+  - So Loved Helping Hands (Johannesburg, Gauteng)
+  - Water for Life (Soweto, Gauteng)
+  - Education First (Alexandra, Gauteng)
+- ✅ Complete database schema with 9 entities
+- ✅ Beautiful UI with Roundup App-inspired design
+- ✅ Fundraising progress bars showing donation targets
+- ✅ Public, fully accessible demo
+- 🔄 Projects data population (in progress)
+- 🔄 PayFast payment integration (South Africa)
+
+## 💻 Tech Stack
+
+### Current Implementation (MVP - Base44 No-Code)
+- **Platform**: Base44 (React-based no-code builder)
+- **Frontend**: React components, Tailwind CSS
+- **Backend**: Base44 API, PostgreSQL database
+- **Database Entities**: Users, Charities, Projects, Donations, Subscriptions, Updates, Badges, CorporateAccounts, Payouts
+- **Payment Gateway**: PayFast (South Africa)
+- **Hosting**: Base44 managed cloud
+- **Design Inspiration**: Roundup App (minimal, clean, blue-focused)
+- **Functionality Inspiration**: Uber (real-time matching, on-demand)
+
+### Future Stack (Node.js Migration)
+- Backend: Express.js + Node.js
+- API: RESTful with JWT authentication
+- Database: PostgreSQL (self-hosted)
+- Frontend: React with modern tooling
+- Hosting: HostKing (SSH/cPanel support)
+- Payment: PayFast API integration
+
+## 🌟 How to Use
+
+### For Donors
+1. Visit [https://impact-link-d61a13ed.base44.app/](https://impact-link-d61a13ed.base44.app/)
+2. Browse verified charities and their active fundraising projects
+3. View detailed fundraising progress bars showing funding targets
+4. Make micro-donations (starting from R5) to causes you care about
+5. Track your donations and see real-time impact
+
+### For Charities
+1. Create verified charity profile
+2. Launch fundraising campaigns with specific goals
+3. Add projects and track donations received
+4. View donor impact and generate reports
+5. Communicate with supporters and share success stories
+
+## 🌍 South African Focus
+
+ImpactLink is specifically designed for the South African nonprofit sector:
+- **Currency**: South African Rand (ZAR)
+- **Payment Gateway**: PayFast (leading SA payment processor)
+- **Launch Cities**: Johannesburg, Soweto, Alexandra (Gauteng province)
+- **Verification**: Compliance with South African NPO standards
+- **Impact**: Supporting local charities and community organizations
+
+## 🤝 Contributing
+
+We welcome contributions! Whether you're interested in:
+- Adding features
+- Improving the Node.js backend
+- Enhancing the UI/UX
+- Writing documentation
+- Testing with real charities
+
+This is an open-source project built for social impact.
+
+## 💬 Connect With Us
+
+- **NPO**: So Loved Helping Hands (Cosmo City, Johannesburg)
+- **Email**: marketing@solovedhelpinghands.org.za
+- **Website**: https://solovedhelpinghands.org.za
+- **GitHub**: idesignmedia6557/ImpactLink
+
+## 📄 License
+
+MIT License - This project is open-source and free for nonprofit organizations to use and adapt.
+
+---
+
+*Last Updated: November 2025*
+*MVP Status: Base44 demo with 3 verified charities and complete database schema*
+
+
 ## Project Vision
 
 ImpactLink aims to revolutionize charitable giving by creating a transparent, accessible micro-donation platform that directly connects donors with verified charities. Our vision is to make charitable giving as simple as a few clicks while ensuring complete transparency about where donations go and how they're used.
